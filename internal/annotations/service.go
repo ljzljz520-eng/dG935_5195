@@ -3,23 +3,17 @@ package annotations
 import (
 	"accountingcollab/internal/domain"
 	"accountingcollab/internal/store"
-	"fmt"
 )
 
 type Service struct{ Store *store.Store }
 
 func New(s *store.Store) *Service { return &Service{Store: s} }
+
+// Save persists a new version of an annotation for doc. Versioning happens
+// atomically inside a single bbolt transaction so each save lands under a
+// distinct key and no prior version is overwritten (see AppendAnnotation).
 func (s *Service) Save(doc, author, content string) (domain.Annotation, error) {
-	current, _ := s.Store.ListAnnotations(doc)
-	version := 1
-	if len(current) > 0 {
-		version = current[len(current)-1].Version + 1
-	}
-	a := domain.NewAnnotation(fmt.Sprintf("%s-%d", doc, version), doc, author, content, 1)
-	if e := s.Store.PutAnnotation(a); e != nil {
-		return a, e
-	}
-	return a, nil
+	return s.Store.AppendAnnotation(doc, author, content)
 }
 func (s *Service) Page(doc string, page, size int) ([]domain.Annotation, bool, error) {
 	all, e := s.Store.ListAnnotations(doc)
