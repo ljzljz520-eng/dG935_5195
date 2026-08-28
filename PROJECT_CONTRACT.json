@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "metrics": {"production_loc": 3643, "production_files": 18, "production_packages": 11, "test_files": 11, "production_functions": 343, "decision_points": 778},
+  "persistence": {"module": "go.etcd.io/bbolt", "entities": ["Workspace", "Document", "Annotation", "ReviewTask"], "reopen_test": "TestPersistenceSurvivesReopen"},
+  "workflows": [
+    {"steps": ["创建协作盘与文档", "提交第一条批注", "提交后续批注并建立版本", "分页读取全部批注"], "test": "TestWorkflowAnnotationRoundTrip"},
+    {"steps": ["创建复核任务", "加载文档与批注", "记录复核决定", "确认任务完成且可重开读取"], "test": "TestWorkflowReviewCompletion"},
+    {"steps": ["筛选文档", "读取批注页", "组装导出快照", "校验导出内容"], "test": "TestWorkflowExportSnapshot"}
+  ]
+}
